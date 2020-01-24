@@ -1,5 +1,7 @@
 var nodePath = require("path");
 
+var PROCESS_PATH = 'babel-plugin-react-native-stylename-to-style/process';
+
 function getExt(node) {
   return nodePath.extname(node.source.value).replace(/^\./, "");
 }
@@ -24,43 +26,11 @@ module.exports = function(babel) {
 
   function generateRequire(name) {
     var require = t.callExpression(t.identifier("require"), [
-      t.stringLiteral("react-native-dynamic-style-processor")
+      t.stringLiteral(PROCESS_PATH)
     ]);
-    var d = t.variableDeclarator(name, require);
+    var processFn = t.memberExpression(require, t.identifier('process'));
+    var d = t.variableDeclarator(name, processFn);
     return t.variableDeclaration("var", [d]);
-  }
-
-  function generateProcessCall(expression, state) {
-    state.hasTransformedClassName = true;
-    expression.object = t.callExpression(
-      t.memberExpression(state.reqName, t.identifier("process")),
-      [expression.object]
-    );
-    return expression;
-  }
-
-  function getStylesFromClassNames(classNames, state) {
-    return classNames
-      .map(c => {
-        var parts = c.split(".");
-        var hasParts = parts[0] !== undefined && parts[1] !== undefined;
-
-        if (specifier && !hasParts) {
-          return;
-        }
-
-        var obj = hasParts ? parts[0] : randomSpecifier.local.name;
-        var prop = hasParts ? parts[1] : c;
-        var hasHyphen = /\w+-\w+/.test(prop) === true;
-
-        var memberExpression = t.memberExpression(
-          t.identifier(obj),
-          hasHyphen ? t.stringLiteral(prop) : t.identifier(prop),
-          hasHyphen
-        );
-        return generateProcessCall(memberExpression, state);
-      })
-      .filter(e => e !== undefined);
   }
 
   // Support dynamic styleName
@@ -71,7 +41,9 @@ module.exports = function(babel) {
   //   V V V
   //
   //   styleName={
-  //     (x || '').split(' ').filter(Boolean).map(function(name) {
+  //     require('babel-plugin-react-native-stylename-to-style/addMultiClasses')(
+  //       _Button2.default, (x || '').split(' ').filter(Boolean)
+  //     ).map(function(name) {
   //       return require('react-native-dynamic-style-processor').process(_Button2.default)[name]
   //     }
   //   }
@@ -84,38 +56,13 @@ module.exports = function(babel) {
   //       let x = 'wrapper' // NOT 'foo.wrapper'
   //       <View styleName={x} />
   function getStyleFromExpression(expression, state) {
+    state.hasTransformedClassName = true;
     var obj = (specifier || randomSpecifier).local.name;
-    var expressionResult = t.logicalExpression(
-      "||",
-      expression,
-      t.stringLiteral("")
+    var processCall = t.callExpression(
+      state.reqName,
+      [t.identifier(obj), expression]
     );
-    var split = t.callExpression(
-      t.memberExpression(expressionResult, t.identifier("split")),
-      [t.stringLiteral(" ")]
-    );
-    var filter = t.callExpression(
-      t.memberExpression(split, t.identifier("filter")),
-      [t.identifier("Boolean")]
-    );
-    var nameIdentifier = t.identifier("name");
-    var styleMemberExpression = t.memberExpression(
-      t.identifier(obj),
-      nameIdentifier,
-      true
-    );
-    var aRequire = generateProcessCall(styleMemberExpression, state);
-    var map = t.callExpression(
-      t.memberExpression(filter, t.identifier("map")),
-      [
-        t.functionExpression(
-          null,
-          [nameIdentifier],
-          t.blockStatement([t.returnStatement(aRequire)])
-        )
-      ]
-    );
-    return map;
+    return processCall;
   }
 
   return {
@@ -126,7 +73,7 @@ module.exports = function(babel) {
       Program: {
         enter(path, state) {
           state.reqName = path.scope.generateUidIdentifier(
-            "react-native-dynamic-style-processor"
+            "processStyleName"
           );
         },
         exit(path, state) {
@@ -200,10 +147,9 @@ module.exports = function(babel) {
           }
 
           if (t.isStringLiteral(styleName.node.value)) {
-            var classNames = styleName.node.value.value
-              .split(" ")
-              .filter(v => v.trim() !== "");
-            expressions = getStylesFromClassNames(classNames, state);
+            expressions = [
+              getStyleFromExpression(styleName.node.value, state)
+            ];
           } else if (t.isJSXExpressionContainer(styleName.node.value)) {
             expressions = [
               getStyleFromExpression(styleName.node.value.expression, state)
