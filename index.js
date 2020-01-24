@@ -33,28 +33,6 @@ module.exports = function(babel) {
     return t.variableDeclaration("var", [d]);
   }
 
-  // Support dynamic styleName
-  // TODO: Add support for multiple named imports
-  // Generates the following:
-  //   styleName={x}
-  //   | | |
-  //   V V V
-  //
-  //   styleName={
-  //     require('babel-plugin-react-native-stylename-to-style/addMultiClasses')(
-  //       _Button2.default, (x || '').split(' ').filter(Boolean)
-  //     ).map(function(name) {
-  //       return require('react-native-dynamic-style-processor').process(_Button2.default)[name]
-  //     }
-  //   }
-  // The current drawbacks are:
-  //   - can be used when there is only one style import
-  //   - even when the single style import is named, that name should not be
-  //     present in expression calculation.
-  //     Example:
-  //       import foo from './Button.css'
-  //       let x = 'wrapper' // NOT 'foo.wrapper'
-  //       <View styleName={x} />
   function getStyleFromExpression(expression, state) {
     state.hasTransformedClassName = true;
     var obj = (specifier || randomSpecifier).local.name;

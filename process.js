@@ -23,13 +23,13 @@ function addMultiClasses(htmlClasses, cssStyles) {
     if (!/\./.test(selector)) continue;
     var cssClasses = selector.split('.');
     if (arrayContainedInArray(cssClasses, htmlClasses)) {
-      var amount = cssClasses.length - 1;
+      var amount = cssClasses.length;
       if (amount > maxAmount) maxAmount = amount;
       if (!resByAmount[amount]) resByAmount[amount] = [];
-      resByAmount.push(selector);
+      resByAmount[amount].push(selector);
     }
   }
-  for (var j = 0; j < maxAmount; j++) {
+  for (var j = 0; j <= maxAmount; j++) {
     if (!resByAmount[j]) continue;
     htmlClasses = htmlClasses.concat(resByAmount[j]);
   }
@@ -37,7 +37,7 @@ function addMultiClasses(htmlClasses, cssStyles) {
 };
 
 function arrayContainedInArray(cssClasses, htmlClasses) {
-  for (var i; i < cssClasses.length; i++) {
+  for (var i = 0; i < cssClasses.length; i++) {
     if (htmlClasses.indexOf(cssClasses[i]) === -1) return false;
   }
   return true;
