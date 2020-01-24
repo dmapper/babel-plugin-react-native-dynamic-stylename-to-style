@@ -1,6 +1,6 @@
 var rnProcess = require('react-native-dynamic-style-processor').process;
 
-exports.process = function processStyleName(cssStyles, styleName) {
+exports.process = function processStyleName(styleName, cssStyles) {
   cssStyles = rnProcess(cssStyles);
   var htmlClasses = (styleName || '').split(' ').filter(Boolean);
   if (htmlClasses.length > 1) {

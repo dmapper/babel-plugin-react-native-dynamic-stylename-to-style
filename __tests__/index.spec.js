@@ -135,76 +135,6 @@ pluginTester({
       `
     },
     {
-      title: "Should support named import and a single class",
-      code: `
-        import foo from './Button.css';
-        const Foo = () => <View styleName="foo.wrapper"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support named import and multiple classes",
-      code: `
-        import foo from './Button.css';
-        const Foo = () => <View styleName="foo.wrapper foo.red"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support named import and a single class with hyphen",
-      code: `
-        import foo from './Button.css';
-        const Foo = () => <View styleName="foo.main-wrapper"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support named import and multiple classes with hyphen",
-      code: `
-        import foo from './Button.css';
-        const Foo = () => <View styleName="foo.main-wrapper foo.red-bg"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support multiple named imports",
-      code: `
-        import foo from './Button.css';
-        import bar from './Grid.css';
-        const Foo = () => <View styleName="foo.wrapper bar.column"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support multiple named imports and hyphens",
-      code: `
-        import foo from './Button.css';
-        import bar from './Grid.css';
-        const Foo = () => <View styleName="foo.main-wrapper bar.left-column"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support multiple named imports with the same classname",
-      code: `
-        import foo from './Button.css';
-        import bar from './Grid.css';
-        import baz from '../Text.scss';
-        const Foo = () => <View styleName="baz.wrapper foo.wrapper bar.wrapper"><Text>Foo</Text></View>
-      `
-    },
-    {
-      title: "Should support multiple named imports and merge with style tag",
-      code: `
-        import foo from './Button.css';
-        import bar from './Grid.css';
-        const Foo = () => <View styleName="foo.wrapper bar.column" style={{ height: 1 }}><Text>Foo</Text></View>
-      `
-    },
-    {
-      title:
-        "Should support multiple named imports and ignore a class without object and property",
-      code: `
-        import foo from './Button.css';
-        import bar from './Grid.css';
-        const Foo = () => <View styleName="foo.wrapper bar.column invalid"><Text>Foo</Text></View>
-      `
-    },
-    {
       title: "Should support expression with single styleName output. Variable",
       code: `
         import './Button.css';
@@ -245,8 +175,8 @@ pluginTester({
         "Should not clash with existing requires with the same name (reactNativeDynamicStyleProcessor)",
       code: `
         import './Button.css';
-        var reactNativeDynamicStyleProcessor = require("react-native-dynamic-style-processor");
-        var _reactNativeDynamicStyleProcessor = require("react-native-dynamic-style-processor");
+        var processStyleName = require("babel-plugin-react-native-stylename-to-style/process");
+        var _processStyleName = require("babel-plugin-react-native-stylename-to-style/process");
         const Foo = () =>  <View styleName="wrapper"><Text>Foo</Text></View>
       `
     }

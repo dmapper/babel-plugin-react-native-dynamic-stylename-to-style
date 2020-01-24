@@ -38,7 +38,7 @@ module.exports = function(babel) {
     var obj = (specifier || randomSpecifier).local.name;
     var processCall = t.callExpression(
       state.reqName,
-      [t.identifier(obj), expression]
+      [expression, t.identifier(obj)]
     );
     return processCall;
   }
