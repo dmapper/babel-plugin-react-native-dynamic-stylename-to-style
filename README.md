@@ -1,25 +1,77 @@
-# babel-plugin-react-native-stylename-to-style
-
-[![NPM version](http://img.shields.io/npm/v/babel-plugin-react-native-stylename-to-style.svg)](https://www.npmjs.org/package/babel-plugin-react-native-stylename-to-style)
-[![Build Status](https://travis-ci.org/kristerkari/babel-plugin-react-native-stylename-to-style.svg?branch=master)](https://travis-ci.org/kristerkari/babel-plugin-react-native-stylename-to-style)
-[![Build status](https://ci.appveyor.com/api/projects/status/1040mtj6qyu9vkg8/branch/master?svg=true)](https://ci.appveyor.com/project/kristerkari/babel-plugin-react-native-stylename-to-style/branch/master)
-[![Coverage Status](https://coveralls.io/repos/github/kristerkari/babel-plugin-react-native-stylename-to-style/badge.svg?branch=master)](https://coveralls.io/github/kristerkari/babel-plugin-react-native-stylename-to-style?branch=master)
-[![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg)](https://egghead.io/courses/how-to-contribute-to-an-open-source-project-on-github)
+# babel-plugin-react-native-dynamic-stylename-to-style
 
 Transform JSX `styleName` property to `style` property in react-native. The `styleName` attribute and syntax are based on [babel-plugin-react-css-modules](https://github.com/gajus/babel-plugin-react-css-modules#conventions).
+
+## Information
+
+This is the fork of https://github.com/kristerkari/babel-plugin-react-native-stylename-to-style
+
+The differences are:
+
+1. Support resolving multi-class selectors in CSS:
+
+```jsx
+import classnames from 'classnames'
+
+function Button ({
+  variant,  // [string] 'primary' | 'secondary'
+  dark,     // [bool]
+  disabled  // [bool]
+}) {
+  return (
+    <Text
+      styleName={classnames('button', [variant, { dark, disabled }])}
+    >CLICK ME</Text>
+  )
+}
+```
+
+```sass
+.button
+  background-color: blue
+  &.primary
+    color: #ff0000
+    &.disabled
+      color: rgba(#ff0000, 0.5)
+  &.secondary
+    color: #00ff00
+    &.disabled
+      color: rgba(#00ff00, 0.5)
+  &.disabled
+    color: #777
+
+.dark
+  &.button
+    background-color: purple
+    &.primary
+      color: white
+      &.disabled
+        color: #ddd
+  &.disabled
+    color: #eee
+```
+
+And what's important is that selectors` specificity is properly emulated. For example:
+
+Styles for `.button.primary.disabled` (specificity *30*) will override styles of `.button.disabled` (specificity *20*),
+even though `.button.disabled` is written later in the CSS.
+
+This simple change brings a lot more capabilities in theming your components for a dynamic look.
+
+2. Support for multiple named css file imports is removed
 
 ## Usage
 
 ### Step 1: Install
 
 ```sh
-yarn add --dev babel-plugin-react-native-stylename-to-style
+yarn add --dev babel-plugin-react-native-dynamic-stylename-to-style
 ```
 
 or
 
 ```sh
-npm install --save-dev babel-plugin-react-native-stylename-to-style
+npm install --save-dev babel-plugin-react-native-dynamic-stylename-to-style
 ```
 
 ### Step 2: Configure `.babelrc`
@@ -32,7 +84,7 @@ You must give one or more file extensions inside an array in the plugin options.
     "react-native"
   ],
   "plugins": [
-    ["react-native-stylename-to-style", {
+    ["react-native-dynamic-stylename-to-style", {
       "extensions": ["css"]
     }]
   ]
@@ -163,52 +215,6 @@ import "./Button.css";
 import Button from "./Button.css";
 
 <View style={[Button.wrapper, { height: 10 }]}>
-  <Text>Foo</Text>
-</View>;
-```
-
-## Named reference
-
-Named reference is used to refer to a specific stylesheet import.
-
-### Single class
-
-```jsx
-import foo from "./Button.css";
-
-<View styleName="foo.wrapper">
-  <Text>Foo</Text>
-</View>;
-```
-
-↓ ↓ ↓ ↓ ↓ ↓
-
-```jsx
-import foo from "./Button.css";
-
-<View style={foo.wrapper}>
-  <Text>Foo</Text>
-</View>;
-```
-
-### Multiple classes
-
-```jsx
-import foo from "./Button.css";
-import bar from "./Grid.css";
-
-<View styleName="foo.wrapper bar.column">
-  <Text>Foo</Text>
-</View>;
-```
-
-↓ ↓ ↓ ↓ ↓ ↓
-
-```jsx
-import foo from "./Button.css";
-import bar from "./Grid.css";
-
-<View style={[foo.wrapper, bar.column]}>
   <Text>Foo</Text>
 </View>;
 ```

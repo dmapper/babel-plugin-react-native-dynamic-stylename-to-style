@@ -1,7 +1,7 @@
 {
-  "name": "babel-plugin-react-native-stylename-to-style",
+  "name": "babel-plugin-react-native-dynamic-stylename-to-style",
   "version": "0.13.0",
-  "description": "Transform JSX styleName property to style property in react-native.",
+  "description": "Dynamically resolve styleName in RN with support for multi-class selectors (for easier modifiers)",
   "keywords": [
     "babel",
     "babel-plugin",
@@ -15,14 +15,15 @@
     "test": "jest --coverage",
     "lint": "eslint ."
   },
-  "author": "Krister Kari",
+  "author": "Pavel Zhukov",
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kristerkari/babel-plugin-react-native-stylename-to-style"
+    "url": "https://github.com/dmapper/babel-plugin-react-native-dynamic-stylename-to-style"
   },
   "files": [
     "CHANGELOG.md",
+    "process.js",
     "index.js",
     "README.md"
   ],
