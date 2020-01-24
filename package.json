@@ -1,6 +1,6 @@
 {
   "name": "babel-plugin-react-native-dynamic-stylename-to-style",
-  "version": "0.13.0",
+  "version": "0.13.1",
   "description": "Dynamically resolve styleName in RN with support for multi-class selectors (for easier modifiers)",
   "keywords": [
     "babel",
