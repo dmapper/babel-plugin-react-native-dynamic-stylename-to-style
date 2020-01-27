@@ -1,6 +1,6 @@
 var nodePath = require("path");
 
-var PROCESS_PATH = 'babel-plugin-react-native-stylename-to-style/process';
+var PROCESS_PATH = 'babel-plugin-react-native-dynamic-stylename-to-style/process';
 
 function getExt(node) {
   return nodePath.extname(node.source.value).replace(/^\./, "");
