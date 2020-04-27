@@ -58,7 +58,11 @@ even though `.button.disabled` is written later in the CSS.
 
 This simple change brings a lot more capabilities in theming your components for a dynamic look.
 
-2. Support for multiple named css file imports is removed
+2. Convert any `*StyleName` attribute to the according `*Style` attribute. This is very useful for passing the sub-element styles (which are usually exposed by react-native libraries) directly from CSS.
+
+3. If the `styleName` value is an object or an array, automatically pipe it through the `classnames`-like library.
+
+4. Support for multiple named css file imports is removed
 
 ## Usage
 
